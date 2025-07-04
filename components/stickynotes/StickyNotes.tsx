@@ -183,6 +183,24 @@ const StickyNotes = () => {
     setDragPosition(null);
   };
 
+  const downloadSingleNote = (note: StickNote) => {
+    const textContent = note.textArea.trim();
+    if (!textContent) return;
+
+    const blob = new Blob([textContent], {
+      type: "text/plain;charset=utf-8",
+    });
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `sticky-note-${note.id}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const handleDrag = (noteId: string, event: any, info: any) => {
     const container = containerRef.current;
     if (!container) return;
@@ -273,14 +291,24 @@ const StickyNotes = () => {
                     Save
                   </motion.button>
                 ) : (
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => handleEditToggle(note.id, true)}
-                    className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
-                  >
-                    Edit
-                  </motion.button>
+                  <>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => handleEditToggle(note.id, true)}
+                      className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
+                    >
+                      Edit
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => downloadSingleNote(note)}
+                      className="px-3 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700"
+                    >
+                      Download
+                    </motion.button>
+                  </>
                 )
               )}
               {note.textArea.length > 0 && (
